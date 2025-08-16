@@ -28,7 +28,13 @@ if uploaded_file:
     img_cv = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
     results = model(img_cv, conf=conf_thresh)
     annotated_frame = results[0].plot()
-    st.image(cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB), caption="Detection Result", use_column_width=True)
+    
+    # Display annotated image
+    st.image(
+        cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB),
+        caption="Detection Result",
+        use_container_width=True  # ✅ updated parameter
+    )
     
     # Download annotated image
     temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
@@ -75,4 +81,3 @@ Version: 1.0.0 | Updated: August 2025 | Powered by BH <br>
 <a href='https://docs.google.com/document/d/18KlYv7Xbp3Y4Snatfez_jff0OW7DWKPoYP3HA3fx2cQ/edit?usp=sharing' target='_blank'>📄 User Manual</a>
 </div>
 """, unsafe_allow_html=True)
-
