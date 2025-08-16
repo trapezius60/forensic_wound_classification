@@ -15,7 +15,7 @@ st.write("Upload an image or use your webcam for live detection")
 
 # ------------------- Load Model -------------------
 # Update with your local model path
-model = YOLO(r"D:\pythonProject\wound_classification\best.pt")
+model = YOLO("models/best.pt")
 
 # ------------------- Confidence Slider -------------------
 conf_thresh = st.slider("Confidence threshold", 0.0, 1.0, 0.25, 0.05)
@@ -75,3 +75,4 @@ Version: 1.0.0 | Updated: August 2025 | Powered by BH <br>
 <a href='https://docs.google.com/document/d/18KlYv7Xbp3Y4Snatfez_jff0OW7DWKPoYP3HA3fx2cQ/edit?usp=sharing' target='_blank'>📄 User Manual</a>
 </div>
 """, unsafe_allow_html=True)
+
