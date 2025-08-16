@@ -10,7 +10,7 @@ from streamlit_webrtc import VideoTransformerBase, webrtc_streamer
 st.set_page_config(page_title="Wound Detection App", layout="wide")
 
 # ------------------- Header -------------------
-st.title("🩹 Wound Detection YOLOv8")
+st.title("🩹 Forensic Wound Detection YOLOv8")
 st.write("Upload an image or use your webcam for live detection")
 
 # ------------------- Load Model -------------------
@@ -81,3 +81,4 @@ Version: 1.0.0 | Updated: August 2025 | Powered by BH <br>
 <a href='https://docs.google.com/document/d/18KlYv7Xbp3Y4Snatfez_jff0OW7DWKPoYP3HA3fx2cQ/edit?usp=sharing' target='_blank'>📄 User Manual</a>
 </div>
 """, unsafe_allow_html=True)
+
