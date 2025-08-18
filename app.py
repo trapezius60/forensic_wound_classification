@@ -12,7 +12,7 @@ st.set_page_config(page_title="Wound Detection App", layout="wide")
 # ------------------- Header -------------------
 st.markdown(
     """
-    <h1 style='text-align: center;'>🤕 Forensic Wound Detection</h1>
+    <h1 style='text-align: center;'>🤕 Forensic Wound Detection 🔎</h1>
     """,
     unsafe_allow_html=True
 )
@@ -90,6 +90,7 @@ Version: 1.0.0 | Updated: August 2025 | Powered by BH <br>
 </div>
 
 """, unsafe_allow_html=True)
+
 
 
 
