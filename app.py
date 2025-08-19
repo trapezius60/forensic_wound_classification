@@ -6,13 +6,29 @@ from PIL import Image
 import tempfile
 from streamlit_webrtc import VideoTransformerBase, webrtc_streamer
 
-# ------------------- Page Config -------------------
-st.set_page_config(page_title="Wound Detection App", layout="wide")
+# ----------------------
+# App Configuration
+# ----------------------
+st.set_page_config(
+    page_title="Wound Detection for Forensic Simulation",
+    page_icon="🩸",
+    layout="wide"
+)
 
-# ------------------- Header -------------------
-st.markdown(
+# ----------------------
+# Header Section
+# ----------------------
+st.title("🩸 Wound Detection App")
+st.markdown("Forensic Medicine Student Simulation & Learning")
+
+# ----------------------
+# Sidebar Links (Best Practice: keep navigation/tools in sidebar)
+# ----------------------
+st.sidebar.header("Resources")
+st.sidebar.markdown(
     """
-    <h1 style='text-align: center;'>🤕 Forensic Wound Detection 🔎</h1>
+    <a href='https://docs.google.com/document/d/18KlYv7Xbp3Y4Snatfez_jff0OW7DWKPoYP3HA3fx2cQ/edit?usp=sharing' target='_blank'>📄 User Manual</a><br>
+    <a href='https://forms.gle/WgGnkcUQPafyhmng8' target='_blank'>👍 Feedback Form</a>
     """,
     unsafe_allow_html=True
 )
@@ -26,21 +42,21 @@ model = YOLO("models/best.pt")
 # ------------------- Confidence Slider -------------------
 conf_thresh = st.slider("Confidence threshold", 0.0, 1.0, 0.25, 0.05)
 
-# ------------------- Image Upload -------------------
-uploaded_file = st.file_uploader("Upload an image", type=["jpg","png","jpeg"])
+# ----------------------
+# Upload Section
+# ----------------------
+st.subheader("📤 Upload Wound Image")
+uploaded_file = st.file_uploader("Upload an image (JPG/PNG)", type=["jpg", "jpeg", "png"])
 
-if uploaded_file:
-    img = Image.open(uploaded_file)
-    img_cv = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
-    results = model(img_cv, conf=conf_thresh)
-    annotated_frame = results[0].plot()
-    
-    # Display annotated image
-    st.image(
-        cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB),
-        caption="Detection Result",
-        use_container_width=True  # ✅ updated parameter
-    )
+
+if uploaded_file is not None:
+    st.image(uploaded_file, caption="Uploaded Image", use_column_width=True)
+    st.success("✅ Image uploaded successfully!")
+
+    # Placeholder: run detection model here
+    st.info("🔎 Running wound detection model (demo)...")
+    # TODO: insert YOLO model inference
+    st.write("Detection results will appear here.")
     
     # Download annotated image
     temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
@@ -79,17 +95,56 @@ if webrtc_ctx.video_transformer:
         else:
             st.warning("No frame captured yet!")
 
-# ------------------- Footer -------------------
+# -----------------------
+# Footer Section
+# -----------------------
 st.markdown("---")
-st.markdown(f"""
-<div style='text-align:center; font-size:14px; color:gray;'>
-Version: 1.0.0 | Updated: August 2025 | Powered by BH <br>
-<div>
-  <a href="https://docs.google.com/document/d/18KlYv7Xbp3Y4Snatfez_jff0OW7DWKPoYP3HA3fx2cQ/edit?usp=sharing" target="_blank">📄 User Manual</a> | 
-  <a href="https://forms.gle/WgGnkcUQPafyhmng8" target="_blank">👍 Feedback Please</a>
-</div>
 
-""", unsafe_allow_html=True)
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    st.markdown(
+        """
+        <a href='https://docs.google.com/document/d/18KlYv7Xbp3Y4Snatfez_jff0OW7DWKPoYP3HA3fx2cQ/edit?usp=sharing' 
+        target='_blank'>
+        📄 User Manual
+        </a>
+        """,
+        unsafe_allow_html=True
+    )
+
+with col2:
+    st.markdown(
+        """
+        <a href='https://forms.gle/WgGnkcUQPafyhmng8' target='_blank'>
+        👍 Feedback Form
+        </a>
+        """,
+        unsafe_allow_html=True
+    )
+
+with col3:
+    st.markdown(
+        """
+        <a href='https://forms.gle/your-post-class-form-link' target='_blank'>
+        📝 Post-class Evaluation
+        </a>
+        """,
+        unsafe_allow_html=True
+    )
+
+# -----------------------
+# Footer Note
+# -----------------------
+st.markdown(
+    """
+    <div style='text-align: center; font-size: 0.9em; color: gray;'>
+    © 2025 Forensic Medicine Teaching App | Maharat Nakhon Ratchasima Hospital
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
 
 
 
