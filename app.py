@@ -61,23 +61,20 @@ if uploaded_file:
         file_name="detection.png"
     )
 
-# ------------------- Webcam Live Detection -------------------
+# ----------------------
+# Webcam Live Detection
+# ----------------------
 class VideoTransformer(VideoTransformerBase):
     def __init__(self):
         self.captured_frame = None
 
     def transform(self, frame):
         img = frame.to_ndarray(format="bgr24")
-        
-        # Add small sleep to prevent overload
-        time.sleep(0.05)
-
-        results = model(img, conf=conf_thresh)
-        annotated = results[0].plot()
+        results = model.predict(img, conf=conf_thresh)
+        annotated = results[0].plot()  # RGB
         self.captured_frame = annotated
         return annotated
 
-# ------------------- Use back camera by default -------------------
 webrtc_ctx = webrtc_streamer(
     key="wound-detection",
     video_transformer_factory=VideoTransformer,
@@ -116,3 +113,4 @@ Version: 1.0.0 | Updated: August 2025 | Powered by BH <br>
   <a href="https://forms.gle/WgGnkcUQPafyhmng8" target="_blank">👍 Feedback Please</a>
 </div>
 """, unsafe_allow_html=True)
+
