@@ -35,7 +35,7 @@ uploaded_file = st.file_uploader("Upload an image", type=["jpg","png","jpeg"])
 
 if uploaded_file:
     img = Image.open(uploaded_file).convert("RGB")
-    img_cv = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
+    img_cv = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)  # convert for YOLO input
     
     # Small sleep for stability
     time.sleep(0.1)
@@ -50,7 +50,7 @@ if uploaded_file:
         use_container_width=True
     )
 
-    # Save for download (convert to BGR for correct color)
+    # Save for download (convert RGB -> BGR)
     annotated_bgr = cv2.cvtColor(annotated_rgb, cv2.COLOR_RGB2BGR)
     temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
     cv2.imwrite(temp_file.name, annotated_bgr)
@@ -63,15 +63,15 @@ if uploaded_file:
 # ------------------- Webcam Live Detection -------------------
 class VideoTransformer(VideoTransformerBase):
     def __init__(self):
-        self.captured_frame = None  # store RGB
+        self.captured_frame = None  # store RGB for display/capture
 
     def transform(self, frame):
         img = frame.to_ndarray(format="bgr24")
-        time.sleep(0.01)  # tiny sleep
+        time.sleep(0.01)  # tiny sleep for smoother frames
 
         results = model(img, conf=conf_thresh)
-        annotated_rgb = results[0].plot()  # RGB for display
-        self.captured_frame = annotated_rgb  # store RGB
+        annotated_rgb = results[0].plot()  # RGB for WebRTC preview
+        self.captured_frame = annotated_rgb  # store for capture/download
         return annotated_rgb
 
 # ------------------- Initialize Webcam -------------------
@@ -90,7 +90,6 @@ if webrtc_ctx.video_transformer:
         if frame_rgb is not None:
             # Convert RGB -> BGR for saving
             frame_bgr = cv2.cvtColor(frame_rgb, cv2.COLOR_RGB2BGR)
-            
             temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
             cv2.imwrite(temp_file.name, frame_bgr)
             
