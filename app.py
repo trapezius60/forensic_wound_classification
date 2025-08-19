@@ -30,7 +30,7 @@ model = load_model()
 conf_thresh = st.slider("Confidence threshold", 0.0, 1.0, 0.25, 0.05)
 
 # ------------------- Image Upload -------------------
-uploaded_file = st.file_uploader("Upload an image", type=["jpg","png","jpeg"])
+uploaded_file = st.file_uploader("📸 Upload an image", type=["jpg","png","jpeg"])
 if uploaded_file:
     img = Image.open(uploaded_file).convert("RGB")
     img_cv = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)  # BGR for YOLO
@@ -100,5 +100,6 @@ Forensic education Version: 1.0.0 | © 2025 BH <br>
   <a href="https://forms.gle/WgGnkcUQPafyhmng8" target="_blank">👍 Feedback Please</a>
 </div>
 """, unsafe_allow_html=True)
+
 
 
