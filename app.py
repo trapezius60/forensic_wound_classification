@@ -27,14 +27,14 @@ except ImportError:
 # ----------------------
 st.set_page_config(
     page_title="Wound Detection for Forensic Simulation",
-    page_icon="🩸",
+    page_icon="🤕",
     layout="wide"
 )
 
 # ----------------------
 # Header Section
 # ----------------------
-st.title("🩸 Wound Detection App")
+st.title("🤕 Wound Detection App 🔎")
 st.markdown("Forensic Medicine Student Simulation & Learning")
 
 # ----------------------
@@ -66,14 +66,14 @@ if uploaded_file is not None:
     image = Image.open(uploaded_file).convert("RGB")
     img_array = np.array(image)
 
-    st.image(img_array, caption="Uploaded Image", use_column_width=True)
+    st.image(img_array, caption="Uploaded Image", use_container_width=True)
     st.success("✅ Image uploaded successfully!")
 
     # Run detection
     results = model.predict(img_array, conf=conf_thresh)
     annotated_frame = results[0].plot()
 
-    st.image(annotated_frame, caption="Detection Result", use_column_width=True)
+    st.image(annotated_frame, caption="Detection Result", use_container_width=True)
 
     # Download annotated image
     temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
@@ -150,3 +150,4 @@ st.markdown(
     "<div style='text-align: center; font-size: 0.9em; color: gray;'>© 2025 Forensic Medicine Teaching App | Maharat Nakhon Ratchasima Hospital</div>",
     unsafe_allow_html=True
 )
+
