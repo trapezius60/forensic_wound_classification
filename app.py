@@ -17,7 +17,6 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
 st.write("Upload an image or use your webcam for live detection")
 
 # ------------------- Load Model -------------------
@@ -32,28 +31,21 @@ conf_thresh = st.slider("Confidence threshold", 0.0, 1.0, 0.25, 0.05)
 
 # ------------------- Image Upload -------------------
 uploaded_file = st.file_uploader("Upload an image", type=["jpg","png","jpeg"])
-
 if uploaded_file:
     img = Image.open(uploaded_file).convert("RGB")
-    img_cv = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)  # convert for YOLO input
-    
-    # Small sleep for stability
-    time.sleep(0.1)
+    img_cv = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)  # BGR for YOLO
 
+    # Run detection
     results = model(img_cv, conf=conf_thresh)
-    annotated_rgb = results[0].plot()  # RGB for display
+    annotated_bgr = results[0].plot()  # YOLO returns BGR
+    annotated_rgb = cv2.cvtColor(annotated_bgr, cv2.COLOR_BGR2RGB)  # convert to RGB for display
 
     # Display annotated image
-    st.image(
-        annotated_rgb,
-        caption="Detection Result",
-        use_container_width=True
-    )
+    st.image(annotated_rgb, caption="Detection Result", use_container_width=True)
 
-    # Save for download (convert RGB -> BGR)
-    annotated_bgr = cv2.cvtColor(annotated_rgb, cv2.COLOR_RGB2BGR)
+    # Save for download
     temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
-    cv2.imwrite(temp_file.name, annotated_bgr)
+    cv2.imwrite(temp_file.name, annotated_bgr)  # save BGR
     st.download_button(
         "Download Annotated Image",
         data=open(temp_file.name, "rb").read(),
@@ -63,18 +55,16 @@ if uploaded_file:
 # ------------------- Webcam Live Detection -------------------
 class VideoTransformer(VideoTransformerBase):
     def __init__(self):
-        self.captured_frame = None  # store RGB for display/capture
+        self.captured_frame = None  # store BGR frame for capture/download
 
     def transform(self, frame):
-        img = frame.to_ndarray(format="bgr24")
-        time.sleep(0.01)  # tiny sleep for smoother frames
-
+        img = frame.to_ndarray(format="bgr24")  # input BGR from webcam
         results = model(img, conf=conf_thresh)
-        annotated_rgb = results[0].plot()  # RGB for WebRTC preview
-        self.captured_frame = annotated_rgb  # store RGB for capture/download
-        return annotated_rgb
+        annotated = results[0].plot()  # BGR for WebRTC preview
+        self.captured_frame = annotated  # store for capture/download
+        return annotated  # BGR preview (WebRTC expects BGR)
 
-# ------------------- Initialize Webcam -------------------
+# Initialize webcam
 webrtc_ctx = webrtc_streamer(
     key="wound-detection",
     video_transformer_factory=VideoTransformer,
@@ -86,13 +76,12 @@ webrtc_ctx = webrtc_streamer(
 st.markdown("---")
 if webrtc_ctx.video_transformer:
     if st.button("📸 Capture & Download Current Frame"):
-        frame_rgb = webrtc_ctx.video_transformer.captured_frame
-        if frame_rgb is not None:
-            # Convert RGB -> BGR for saving
-            frame_bgr = cv2.cvtColor(frame_rgb, cv2.COLOR_RGB2BGR)
+        frame_bgr = webrtc_ctx.video_transformer.captured_frame
+        if frame_bgr is not None:
+            # Convert BGR -> RGB -> BGR for saving (ensures correct color)
+            frame_rgb = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2RGB)
             temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
-            cv2.imwrite(temp_file.name, frame_bgr)
-
+            cv2.imwrite(temp_file.name, cv2.cvtColor(frame_rgb, cv2.COLOR_RGB2BGR))  # save correctly
             st.download_button(
                 "Download Captured Image",
                 data=open(temp_file.name, "rb").read(),
