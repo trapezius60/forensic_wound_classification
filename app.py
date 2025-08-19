@@ -5,7 +5,7 @@ import numpy as np
 from PIL import Image
 import tempfile
 from streamlit_webrtc import VideoTransformerBase, webrtc_streamer
-import time  # For sleep/delay
+import time
 
 # ------------------- Page Config -------------------
 st.set_page_config(page_title="Wound Detection App", page_icon="🤕", layout="wide")
@@ -41,17 +41,17 @@ if uploaded_file:
     time.sleep(0.1)
 
     results = model(img_cv, conf=conf_thresh)
-    annotated_frame = results[0].plot()  # RGB
+    annotated_rgb = results[0].plot()  # RGB for display
 
     # Display annotated image
     st.image(
-        cv2.cvtColor(annotated_frame, cv2.COLOR_RGB2BGR),
+        annotated_rgb,
         caption="Detection Result",
         use_container_width=True
     )
 
-    # Save annotated image correctly
-    annotated_bgr = cv2.cvtColor(annotated_frame, cv2.COLOR_RGB2BGR)
+    # Save for download (convert to BGR for correct color)
+    annotated_bgr = cv2.cvtColor(annotated_rgb, cv2.COLOR_RGB2BGR)
     temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
     cv2.imwrite(temp_file.name, annotated_bgr)
     st.download_button(
@@ -63,20 +63,16 @@ if uploaded_file:
 # ------------------- Webcam Live Detection -------------------
 class VideoTransformer(VideoTransformerBase):
     def __init__(self):
-        self.captured_frame = None
+        self.captured_frame = None  # store RGB
 
     def transform(self, frame):
         img = frame.to_ndarray(format="bgr24")
-        
-        # tiny sleep to avoid dropped frames
-        time.sleep(0.01)
+        time.sleep(0.01)  # tiny sleep
 
-        results = model(img, conf=conf_thresh)  # run inference on live frame
-        annotated = results[0].plot()  # RGB
-        annotated_bgr = cv2.cvtColor(annotated, cv2.COLOR_RGB2BGR)
-
-        self.captured_frame = annotated_bgr
-        return annotated_bgr
+        results = model(img, conf=conf_thresh)
+        annotated_rgb = results[0].plot()  # RGB for display
+        self.captured_frame = annotated_rgb  # store RGB
+        return annotated_rgb
 
 # ------------------- Initialize Webcam -------------------
 webrtc_ctx = webrtc_streamer(
@@ -90,15 +86,14 @@ webrtc_ctx = webrtc_streamer(
 st.markdown("---")
 if webrtc_ctx.video_transformer:
     if st.button("📸 Capture & Download Current Frame"):
-        frame = webrtc_ctx.video_transformer.captured_frame
-        if frame is not None:
-            # Run inference again for safety
-            results = model(frame, conf=conf_thresh)
-            annotated_frame = results[0].plot()
-            annotated_bgr = cv2.cvtColor(annotated_frame, cv2.COLOR_RGB2BGR)
+        frame_rgb = webrtc_ctx.video_transformer.captured_frame
+        if frame_rgb is not None:
+            # Convert RGB -> BGR for saving
+            frame_bgr = cv2.cvtColor(frame_rgb, cv2.COLOR_RGB2BGR)
             
             temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
-            cv2.imwrite(temp_file.name, annotated_bgr)
+            cv2.imwrite(temp_file.name, frame_bgr)
+            
             st.download_button(
                 "Download Captured Image",
                 data=open(temp_file.name, "rb").read(),
