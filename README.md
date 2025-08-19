@@ -34,14 +34,14 @@ Install dependencies:
 
 pip install -r requirements.txt
 
-▶️ Usage
+##▶️ Usage
 
 Run the Streamlit app:
 streamlit run app.py
 
 Open your browser at http://localhost:8501.
 
-📂 Project Structure
+##📂 Project Structure
 forensic_wound_calssification/
 │── app.py # Main Streamlit application
 │── models/
@@ -49,7 +49,7 @@ forensic_wound_calssification/
 │── requirements.txt # Python dependencies
 │── README.md # Project documentation
 
-📦 Requirements
+##📦 Requirements
 
 streamlit>=1.30.0
 ultralytics==8.3.0        # works with Python 3.13 on Streamlit Cloud
@@ -61,7 +61,7 @@ Pillow>=10.0.0
 Install everything via:
 pip install -r requirements.txt
 
-🧠 Model
+##🧠 Model
 
 The app uses YOLOv8
  for wound detection.
@@ -69,26 +69,25 @@ You can replace yolov8n.pt with your custom-trained model to detect specific wou
 
 📸 Screenshots
 Live Detection
-
 Uploaded Image
 
-📌 Roadmap
+##📌 Roadmap
 
  Add wound classification (type/severity).
  Support video file uploads.
  Enhance post-class evaluation metrics.
  Deploy to cloud (Streamlit Cloud / Hugging Face Spaces).
 
-🤝 Contributing
+##🤝 Contributing
 
 Pull requests are welcome! For major changes, please open an issue first to discuss what you’d like to change.
 
-📜 License
+##📜 License
 
 This project is licensed under the MIT License – see the LICENSE
  file for details.
 
-🙏 Acknowledgments
+##🙏 Acknowledgments
 
 Ultralytics YOLOv8
 Streamlit
