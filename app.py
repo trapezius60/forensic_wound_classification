@@ -71,7 +71,7 @@ class VideoTransformer(VideoTransformerBase):
 
         results = model(img, conf=conf_thresh)
         annotated_rgb = results[0].plot()  # RGB for WebRTC preview
-        self.captured_frame = annotated_rgb  # store for capture/download
+        self.captured_frame = annotated_rgb  # store RGB for capture/download
         return annotated_rgb
 
 # ------------------- Initialize Webcam -------------------
@@ -92,7 +92,7 @@ if webrtc_ctx.video_transformer:
             frame_bgr = cv2.cvtColor(frame_rgb, cv2.COLOR_RGB2BGR)
             temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
             cv2.imwrite(temp_file.name, frame_bgr)
-            
+
             st.download_button(
                 "Download Captured Image",
                 data=open(temp_file.name, "rb").read(),
