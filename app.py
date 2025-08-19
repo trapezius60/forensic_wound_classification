@@ -1,80 +1,57 @@
 import streamlit as st
-from PIL import Image
+from ultralytics import YOLO
+import cv2
 import numpy as np
+from PIL import Image
 import tempfile
 from streamlit_webrtc import VideoTransformerBase, webrtc_streamer
+import time  # For sleep/delay
 
-# ----------------------
-# Load YOLO model
-# ----------------------
-@st.cache_resource
-def load_model():
-    from ultralytics import YOLO
-    return YOLO("models/best.pt")
+# ------------------- Page Config -------------------
+st.set_page_config(page_title="Wound Detection App", layout="wide")
 
-model = load_model()
-
-# ----------------------
-# OpenCV import
-# ----------------------
-try:
-    import cv2
-except ImportError:
-    st.error("⚠️ OpenCV failed to load. Please refresh after a few seconds.")
-
-# ----------------------
-# App Configuration
-# ----------------------
-st.set_page_config(
-    page_title="Wound Detection for Forensic Simulation",
-    page_icon="🩸",
-    layout="wide"
-)
-
-# ----------------------
-# Header Section
-# ----------------------
-st.title("🩸 Wound Detection App")
-st.markdown("Forensic Medicine Student Simulation & Learning")
-
-# ----------------------
-# Sidebar Resources
-# ----------------------
-st.sidebar.header("Resources")
-st.sidebar.markdown(
+# ------------------- Header -------------------
+st.markdown(
     """
-    <a href='https://docs.google.com/document/d/18KlYv7Xbp3Y4Snatfez_jff0OW7DWKPoYP3HA3fx2cQ/edit?usp=sharing' target='_blank'>📄 User Manual</a><br>
-    <a href='https://forms.gle/WgGnkcUQPafyhmng8' target='_blank'>👍 Feedback Form</a>
+    <h1 style='text-align: center;'>🤕 Forensic Wound Detection 🔎</h1>
     """,
     unsafe_allow_html=True
 )
 
 st.write("Upload an image or use your webcam for live detection")
 
-# ----------------------
-# Confidence Slider
-# ----------------------
+# ------------------- Load Model -------------------
+# Use caching to avoid reloading on every rerun
+@st.cache_resource
+def load_model():
+    return YOLO("models/best.pt")
+
+model = load_model()
+
+# ------------------- Confidence Slider -------------------
 conf_thresh = st.slider("Confidence threshold", 0.0, 1.0, 0.25, 0.05)
 
-# ----------------------
-# Upload Section
-# ----------------------
-st.subheader("📤 Upload Wound Image")
-uploaded_file = st.file_uploader("Upload an image (JPG/PNG)", type=["jpg", "jpeg", "png"])
+# ------------------- Image Upload -------------------
+uploaded_file = st.file_uploader("Upload an image", type=["jpg","png","jpeg"])
 
-if uploaded_file is not None:
-    image = Image.open(uploaded_file).convert("RGB")
-    img_array = np.array(image)
+if uploaded_file:
+    img = Image.open(uploaded_file).convert("RGB")
+    img_cv = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
+    
+    # Add small sleep to ensure app stability
+    time.sleep(0.1)
 
-    st.image(img_array, caption="Uploaded Image", use_container_width=True)
-
-    # Run YOLO inference on uploaded image
-    results = model.predict(img_array, conf=conf_thresh)
-    annotated_frame = results[0].plot()  # RGB
-
-    st.image(annotated_frame, caption="Detection Result", use_container_width=True)
-
-    # Save annotated image with correct color
+    results = model(img_cv, conf=conf_thresh)
+    annotated_frame = results[0].plot()
+    
+    # Display annotated image
+    st.image(
+        cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB),
+        caption="Detection Result",
+        use_container_width=True
+    )
+    
+    # Download annotated image
     annotated_bgr = cv2.cvtColor(annotated_frame, cv2.COLOR_RGB2BGR)
     temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
     cv2.imwrite(temp_file.name, annotated_bgr)
@@ -84,20 +61,23 @@ if uploaded_file is not None:
         file_name="detection.png"
     )
 
-# ----------------------
-# Webcam Live Detection
-# ----------------------
+# ------------------- Webcam Live Detection -------------------
 class VideoTransformer(VideoTransformerBase):
     def __init__(self):
         self.captured_frame = None
 
     def transform(self, frame):
         img = frame.to_ndarray(format="bgr24")
-        results = model.predict(img, conf=conf_thresh)
-        annotated = results[0].plot()  # RGB
+        
+        # Add small sleep to prevent overload
+        time.sleep(0.05)
+
+        results = model(img, conf=conf_thresh)
+        annotated = results[0].plot()
         self.captured_frame = annotated
         return annotated
 
+# ------------------- Use back camera by default -------------------
 webrtc_ctx = webrtc_streamer(
     key="wound-detection",
     video_transformer_factory=VideoTransformer,
@@ -105,19 +85,17 @@ webrtc_ctx = webrtc_streamer(
     async_transform=True,
 )
 
-# ----------------------
-# Capture Button (live frame)
-# ----------------------
+# ------------------- Capture Button -------------------
 st.markdown("---")
 if webrtc_ctx.video_transformer:
     if st.button("📸 Capture & Download Current Frame"):
         frame = webrtc_ctx.video_transformer.captured_frame
         if frame is not None:
-            # Run YOLO on captured frame to ensure bounding boxes
-            results = model.predict(frame, conf=conf_thresh)
-            annotated_frame = results[0].plot()  # RGB
+            # Run inference again on captured frame for reliability
+            results = model(frame, conf=conf_thresh)
+            annotated_frame = results[0].plot()
             annotated_bgr = cv2.cvtColor(annotated_frame, cv2.COLOR_RGB2BGR)
-
+            
             temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
             cv2.imwrite(temp_file.name, annotated_bgr)
             st.download_button(
@@ -126,32 +104,15 @@ if webrtc_ctx.video_transformer:
                 file_name="capture.png"
             )
         else:
-            st.warning("No frame captured yet! Wait a second for detection to initialize.")
+            st.warning("No frame captured yet! Please wait for the webcam to initialize.")
 
-# ----------------------
-# Footer Section
-# ----------------------
+# ------------------- Footer -------------------
 st.markdown("---")
-col1, col2, col3 = st.columns(3)
-
-with col1:
-    st.markdown(
-        "<a href='https://docs.google.com/document/d/18KlYv7Xbp3Y4Snatfez_jff0OW7DWKPoYP3HA3fx2cQ/edit?usp=sharing' target='_blank'>📄 User Manual</a>",
-        unsafe_allow_html=True
-    )
-with col2:
-    st.markdown(
-        "<a href='https://forms.gle/WgGnkcUQPafyhmng8' target='_blank'>👍 Feedback Form</a>",
-        unsafe_allow_html=True
-    )
-with col3:
-    st.markdown(
-        "<a href='https://forms.gle/your-post-class-form-link' target='_blank'>📝 Post-class Evaluation</a>",
-        unsafe_allow_html=True
-    )
-
-# Footer Note
-st.markdown(
-    "<div style='text-align: center; font-size: 0.9em; color: gray;'>© 2025 Forensic Medicine Teaching App | Maharat Nakhon Ratchasima Hospital</div>",
-    unsafe_allow_html=True
-)
+st.markdown(f"""
+<div style='text-align:center; font-size:14px; color:gray;'>
+Version: 1.0.0 | Updated: August 2025 | Powered by BH <br>
+<div>
+  <a href="https://docs.google.com/document/d/18KlYv7Xbp3Y4Snatfez_jff0OW7DWKPoYP3HA3fx2cQ/edit?usp=sharing" target="_blank">📄 User Manual</a> | 
+  <a href="https://forms.gle/WgGnkcUQPafyhmng8" target="_blank">👍 Feedback Please</a>
+</div>
+""", unsafe_allow_html=True)
