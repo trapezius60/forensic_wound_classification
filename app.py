@@ -46,7 +46,7 @@ st.write("Upload an image or use your webcam for live detection")
 
 # ------------------- Load Model -------------------
 # Update with your local model path
-model = YOLO("models/best.pt")
+#model = YOLO("models/best.pt")
 
 # ------------------- Confidence Slider -------------------
 conf_thresh = st.slider("Confidence threshold", 0.0, 1.0, 0.25, 0.05)
@@ -153,6 +153,7 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
 
 
 
