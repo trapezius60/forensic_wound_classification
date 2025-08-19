@@ -1,10 +1,19 @@
 import streamlit as st
-from ultralytics import YOLO
-import cv2
+#from ultralytics import YOLO
+#import cv2
 import numpy as np
 from PIL import Image
 import tempfile
 from streamlit_webrtc import VideoTransformerBase, webrtc_streamer
+
+@st.cache_resource
+def load_model():
+    from ultralytics import YOLO
+    return YOLO("models/best.pt")
+try:
+    import cv2
+except ImportError:
+    st.error("⚠️ OpenCV failed to load. Please refresh after a few seconds.")
 
 # ----------------------
 # App Configuration
@@ -144,6 +153,7 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
 
 
 
