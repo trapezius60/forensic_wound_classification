@@ -27,14 +27,14 @@ except ImportError:
 # ----------------------
 st.set_page_config(
     page_title="Wound Detection for Forensic Simulation",
-    page_icon="🤕",
+    page_icon="🩸",
     layout="wide"
 )
 
 # ----------------------
 # Header Section
 # ----------------------
-st.title("🤕 Wound Detection App 🔎")
+st.title("🩸 Wound Detection App")
 st.markdown("Forensic Medicine Student Simulation & Learning")
 
 # ----------------------
@@ -67,17 +67,17 @@ if uploaded_file is not None:
     img_array = np.array(image)
 
     st.image(img_array, caption="Uploaded Image", use_container_width=True)
-    st.success("✅ Image uploaded successfully!")
 
-    # Run detection
+    # Run YOLO inference on uploaded image
     results = model.predict(img_array, conf=conf_thresh)
-    annotated_frame = results[0].plot()
+    annotated_frame = results[0].plot()  # RGB
 
     st.image(annotated_frame, caption="Detection Result", use_container_width=True)
 
-    # Download annotated image
+    # Save annotated image with correct color
+    annotated_bgr = cv2.cvtColor(annotated_frame, cv2.COLOR_RGB2BGR)
     temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
-    cv2.imwrite(temp_file.name, annotated_frame)
+    cv2.imwrite(temp_file.name, annotated_bgr)
     st.download_button(
         "Download Annotated Image",
         data=open(temp_file.name, "rb").read(),
@@ -94,7 +94,7 @@ class VideoTransformer(VideoTransformerBase):
     def transform(self, frame):
         img = frame.to_ndarray(format="bgr24")
         results = model.predict(img, conf=conf_thresh)
-        annotated = results[0].plot()
+        annotated = results[0].plot()  # RGB
         self.captured_frame = annotated
         return annotated
 
@@ -106,22 +106,27 @@ webrtc_ctx = webrtc_streamer(
 )
 
 # ----------------------
-# Capture Button
+# Capture Button (live frame)
 # ----------------------
 st.markdown("---")
 if webrtc_ctx.video_transformer:
     if st.button("📸 Capture & Download Current Frame"):
         frame = webrtc_ctx.video_transformer.captured_frame
         if frame is not None:
+            # Run YOLO on captured frame to ensure bounding boxes
+            results = model.predict(frame, conf=conf_thresh)
+            annotated_frame = results[0].plot()  # RGB
+            annotated_bgr = cv2.cvtColor(annotated_frame, cv2.COLOR_RGB2BGR)
+
             temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
-            cv2.imwrite(temp_file.name, frame)
+            cv2.imwrite(temp_file.name, annotated_bgr)
             st.download_button(
                 "Download Captured Image",
                 data=open(temp_file.name, "rb").read(),
                 file_name="capture.png"
             )
         else:
-            st.warning("No frame captured yet!")
+            st.warning("No frame captured yet! Wait a second for detection to initialize.")
 
 # ----------------------
 # Footer Section
@@ -150,4 +155,3 @@ st.markdown(
     "<div style='text-align: center; font-size: 0.9em; color: gray;'>© 2025 Forensic Medicine Teaching App | Maharat Nakhon Ratchasima Hospital</div>",
     unsafe_allow_html=True
 )
-
