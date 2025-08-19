@@ -52,35 +52,27 @@ if uploaded_file:
     )
     
     # Download annotated image
-    annotated_bgr = cv2.cvtColor(annotated_frame, cv2.COLOR_RGB2BGR)
     temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
-    cv2.imwrite(temp_file.name, annotated_bgr)
-    st.download_button(
-        "Download Annotated Image",
-        data=open(temp_file.name, "rb").read(),
-        file_name="detection.png"
-    )
-
-# ----------------------
-# Webcam Live Detection
-# ----------------------
+    cv2.imwrite(temp_file.name, annotated_frame)
+    st.download_button("Download Annotated Image", data=open(temp_file.name, "rb"), file_name="detection.png")
+    
 class VideoTransformer(VideoTransformerBase):
     def __init__(self):
         self.captured_frame = None
 
     def transform(self, frame):
         img = frame.to_ndarray(format="bgr24")
-        results = model.predict(img, conf=conf_thresh)
-        annotated = results[0].plot()  # RGB
-        self.captured_frame = annotated
-        return annotated
+        
+        # tiny sleep to avoid dropped frames
+        import time; time.sleep(0.01)
 
-webrtc_ctx = webrtc_streamer(
-    key="wound-detection",
-    video_transformer_factory=VideoTransformer,
-    media_stream_constraints={"video": {"facingMode": "environment"}, "audio": False},
-    async_transform=True,
-)
+        results = model(img, conf=conf_thresh)  # use model(img) instead of predict()
+        annotated = results[0].plot()  # RGB
+        annotated_bgr = cv2.cvtColor(annotated, cv2.COLOR_RGB2BGR)
+        
+        self.captured_frame = annotated_bgr
+        return annotated_bgr
+
 
 # ------------------- Capture Button -------------------
 st.markdown("---")
@@ -88,20 +80,11 @@ if webrtc_ctx.video_transformer:
     if st.button("📸 Capture & Download Current Frame"):
         frame = webrtc_ctx.video_transformer.captured_frame
         if frame is not None:
-            # Run inference again on captured frame for reliability
-            results = model(frame, conf=conf_thresh)
-            annotated_frame = results[0].plot()
-            annotated_bgr = cv2.cvtColor(annotated_frame, cv2.COLOR_RGB2BGR)
-            
             temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
-            cv2.imwrite(temp_file.name, annotated_bgr)
-            st.download_button(
-                "Download Captured Image",
-                data=open(temp_file.name, "rb").read(),
-                file_name="capture.png"
-            )
+            cv2.imwrite(temp_file.name, frame)
+            st.download_button("Download Captured Image", data=open(temp_file.name, "rb"), file_name="capture.png")
         else:
-            st.warning("No frame captured yet! Please wait for the webcam to initialize.")
+            st.warning("No frame captured yet!")
 
 # ------------------- Footer -------------------
 st.markdown("---")
@@ -113,5 +96,6 @@ Version: 1.0.0 | Updated: August 2025 | Powered by BH <br>
   <a href="https://forms.gle/WgGnkcUQPafyhmng8" target="_blank">👍 Feedback Please</a>
 </div>
 """, unsafe_allow_html=True)
+
 
 
