@@ -8,7 +8,7 @@ from streamlit_webrtc import VideoTransformerBase, webrtc_streamer
 import time  # For sleep/delay
 
 # ------------------- Page Config -------------------
-st.set_page_config(page_title="Wound Detection App", layout="wide")
+st.set_page_config(page_title="Wound Detection App", page_icon="🤕", layout="wide")
 
 # ------------------- Header -------------------
 st.markdown(
@@ -113,4 +113,5 @@ Version: 1.0.0 | Updated: August 2025 | Powered by BH <br>
   <a href="https://forms.gle/WgGnkcUQPafyhmng8" target="_blank">👍 Feedback Please</a>
 </div>
 """, unsafe_allow_html=True)
+
 
