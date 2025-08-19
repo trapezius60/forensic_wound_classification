@@ -33,8 +33,9 @@ venv\Scripts\activate      # For Windows
 Install dependencies:
 
 pip install -r requirements.txt
+---
 
-##▶️ Usage
+## ▶️ Usage
 
 Run the Streamlit app:
 streamlit run app.py
