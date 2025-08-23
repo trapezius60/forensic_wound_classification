@@ -19,6 +19,16 @@ st.markdown(
 )
 st.write("Upload an image or use your webcam for live detection")
 
+# ------------------- Wound Descriptions -------------------
+wound_descriptions = {
+    "wound_hesitation": "บาดแผลลังเล (Hesitation wound): มักพบในผู้พยายามทำร้ายตนเอง มีลักษณะเป็นแผลตื้นหลายแผล อยู่ใกล้แผลหลัก",
+    "wound_laceration": "บาดแผลฉีกขาด (Laceration): เกิดจากแรงกระแทกหรือการฉีกขาดของผิวหนัง ขอบแผลไม่เรียบ",
+    "wound_incision": "บาดแผลถูกฟัน/กรีด (Incised wound): ขอบแผลเรียบคม เกิดจากของมีคม",
+    "wound_contusion": "บาดแผลฟกช้ำ (Contusion): เกิดจากแรงกระแทก ทำให้หลอดเลือดใต้ผิวหนังแตก",
+    "wound_stab": "บาดแผลแทง (Stab wound): มีความลึกมากกว่าความยาว ปกติเกิดจากของมีคมปลายแหลม"
+    # ➕ Add more classes if your model has them
+}
+
 # ------------------- Load Model -------------------
 @st.cache_resource
 def load_model():
@@ -42,6 +52,23 @@ if uploaded_file:
 
     # Display annotated image
     st.image(annotated_rgb, caption="Detection Result", use_container_width=True)
+
+    # Extract detected wound types
+    detected_classes = set()
+    for r in results[0].boxes.cls.cpu().numpy():
+        cls_name = results[0].names[int(r)]
+        detected_classes.add(cls_name)
+
+    # Show descriptions if available
+    if detected_classes:
+        st.subheader("📝 Wound Type Descriptions")
+        desc_texts = []
+        for cls in detected_classes:
+            if cls in wound_descriptions:
+                desc_texts.append(f"**{cls}**: {wound_descriptions[cls]}")
+            else:
+                desc_texts.append(f"**{cls}**: (No description available)")
+        st.info("\n\n".join(desc_texts))
 
     # Save for download
     temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
@@ -100,6 +127,3 @@ Forensic education Version: 1.0.0 | © 2025 BH <br>
   <a href="https://forms.gle/WgGnkcUQPafyhmng8" target="_blank">👍 Feedback Please</a>
 </div>
 """, unsafe_allow_html=True)
-
-
-
