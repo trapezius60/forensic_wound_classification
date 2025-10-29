@@ -95,7 +95,7 @@ Streamlit
 OpenCV
 
 
-🧬 Forensic Wound Classification — Label Map & Data Dictionary
+#🧬 Forensic Wound Classification — Label Map & Data Dictionary
 
 This project uses a unified label map across all dataset annotations, YOLOv8 configuration files, training scripts, and publication figures.
 All labels are case-sensitive and written in lowercase with underscores (_) separating words.
