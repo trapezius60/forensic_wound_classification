@@ -1,168 +1,139 @@
-# 🤕 forensic wound classification
+# 🤕 Forensic Wound Classification
 
-A **real-time wound detection web app** built with [Streamlit](https://streamlit.io/) and [YOLOv8](https://github.com/ultralytics/ultralytics).  
-The app allows you to detect wounds on images, uploaded files, or directly from a webcam with live streaming.
-for medical education during learning simulate scene investigation.
+A **real-time wound detection web app** for medical education built with [Streamlit](https://streamlit.io/) and [YOLOv8](https://github.com/ultralytics/ultralytics). Designed for learning simulated scene investigation during forensic pathology training.
+
 ---
 
 ## 🚀 Features
 
-- 📷 **Upload Image** – Detect wounds in uploaded images.  
-- 🎥 **Live Camera** – Perform real-time wound detection via webcam.  
-- 📸 **Take a Snapshot** – Capture an image from the live feed and run detection.  
-- 💾 **Download Results** – Save processed images with bounding boxes.  
-- 📊 **Post-Evaluation** – Evaluate detection results after processing.  
+- 📷 **Upload Image** – Detect wounds in uploaded images
+- 🎥 **Live Camera** – Real-time wound detection via webcam
+- 📸 **Snapshot Capture** – Capture and analyze images from live feed
+- 💾 **Download Results** – Save processed images with bounding boxes
+- 📊 **Post-Evaluation** – Evaluate detection results after processing
 
 ---
 
 ## 🛠️ Installation
 
-Clone the repository:
-
 ```bash
+# Clone the repository
 git clone https://github.com/trapezius60/forensic_wound_classification.git
 cd forensic_wound_classification
 
-
-Create and activate a virtual environment:
-
+# Create and activate virtual environment
 python -m venv venv
-source venv/bin/activate   # For Linux/Mac
-venv\Scripts\activate      # For Windows
+source venv/bin/activate   # Linux/Mac
+venv\Scripts\activate      # Windows
 
-Install dependencies:
-
+# Install dependencies
 pip install -r requirements.txt
+```
+
 ---
 
 ## ▶️ Usage
 
-Run the Streamlit app:
+```bash
 streamlit run app.py
+```
 
-Open your browser at http://localhost:8501.
+Open your browser at `http://localhost:8501`
 
-##📂 Project Structure
-forensic_wound_calssification/
-│── app.py # Main Streamlit application
-│── models/
-│ └── yolov8n.pt # YOLOv8 model weights
-│── requirements.txt # Python dependencies
-│── README.md # Project documentation
+---
 
-##📦 Requirements
+## 📂 Project Structure
 
+```
+forensic_wound_classification/
+├── app.py                 # Main Streamlit application
+├── models/
+│   └── best.pt           # YOLOv8 trained weights (6 MB)
+├── requirements.txt       # Python dependencies
+└── README.md             # Documentation
+```
+
+---
+
+## 📦 Requirements
+
+```txt
 streamlit>=1.30.0
-ultralytics==8.3.0        # works with Python 3.13 on Streamlit Cloud
+ultralytics==8.3.0
 opencv-python-headless==4.8.1.78
 streamlit-webrtc==0.63.0
 numpy>=1.26.0
 Pillow>=10.0.0
+```
 
-Install everything via:
-pip install -r requirements.txt
+---
 
-##🧠 Model
+## 🗂️ Wound Classification Labels
 
-The app uses YOLOv8
- for wound detection.
-You can replace yolov8n.pt with your custom-trained model to detect specific wound types.
+| ID | Class Name | Description |
+|---|---|---|
+| 0 | `gsw_entrance` | Gunshot wound entrance - small circular/oval with inward beveling |
+| 1 | `gsw_exit` | Gunshot wound exit - irregular laceration with outward beveling |
+| 2 | `wound_burn` | Thermal injury with charring or blistering |
+| 3 | `wound_hanging` | Ligature mark on neck consistent with hanging |
+| 4 | `wound_hesitation` | Superficial parallel cuts (self-inflicted hesitation marks) |
+| 5 | `wound_laceration` | Blunt force tear with irregular edges and tissue bridging |
+| 6 | `wound_open_fracture` | Fracture with exposed bone or tissue disruption |
+| 7 | `wound_strangulation` | Neck compression marks with petechiae or abrasions |
 
-📸 Screenshots
-Live Detection
-Uploaded Image
+---
 
-##📌 Roadmap
+## 🧠 Model Details
 
- Add wound classification (type/severity).
- Support video file uploads.
- Enhance post-class evaluation metrics.
- Deploy to cloud (Streamlit Cloud / Hugging Face Spaces).
+**Architecture:** YOLOv8n (Ultralytics v8.3.191)  
+**Training Data:** 595 images, 569 annotated instances  
+**Split:** 70% train / 20% validation / 10% test  
+**Resolution:** 640 × 640 px (grayscale, CRT phosphor filter)  
+**Optimizer:** AdamW (LR: 0.01, 100 epochs with early stopping)  
+**Metrics:** Precision, Recall, mAP@50, mAP@50-95, ECE
 
-##🤝 Contributing
+**Environment:**
+- Python 3.12
+- Ultralytics 8.3.191
+- PyTorch 2.8.0 + CUDA 12.6
 
-Pull requests are welcome! For major changes, please open an issue first to discuss what you’d like to change.
+---
 
-##📜 License
+## 📌 Roadmap
 
-This project is licensed under the MIT License – see the LICENSE
- file for details.
+- [ ] Add severity grading and classification confidence scores
+- [ ] Support video file uploads
+- [ ] Enhanced evaluation metrics dashboard
+- [ ] Cloud deployment (Streamlit Cloud / Hugging Face Spaces)
 
-##🙏 Acknowledgments
+---
 
-Ultralytics YOLOv8
-Streamlit
-OpenCV
+## 🤝 Contributing
 
+Pull requests are welcome! For major changes, please open an issue first.
 
-#🧬 Forensic Wound Classification — Label Map & Data Dictionary
+---
 
-This project uses a unified label map across all dataset annotations, YOLOv8 configuration files, training scripts, and publication figures.
-All labels are case-sensitive and written in lowercase with underscores (_) separating words.
+## 📜 License
 
-🗂️ Label Map
-ID	Class Name	Description	Example Appearance
-0	gsw_entrance	Gunshot wound (entrance) — small circular or oval wound with inward beveling	Typically found at bullet entry site
-1	gsw_exit	Gunshot wound (exit) — irregular laceration with outward beveling	Typically larger than entrance wound
-2	wound_burn	Thermal injury with charring or blistering of skin	May appear dark brown to black with irregular margins
-3	wound_hanging	Ligature mark or neck indentation consistent with hanging	Typically horizontal or oblique mark on neck
-4	wound_hesitation	Superficial, parallel cuts consistent with self-inflicted hesitation marks	Often found near fatal incised wound sites
-5	wound_laceration	Tear in skin due to blunt force trauma	Irregular edges with tissue bridging
-6	wound_open_fracture	Fracture with exposed bone or tissue disruption	Commonly associated with high-impact trauma
-7	wound_strangulation	Neck compression marks with petechiae or abrasions	May show patterned bruising or linear marks
-📦 Dataset Summary
+MIT License – see [LICENSE](LICENSE) file for details.
 
-Total Images: 595
+---
 
-Total Annotated Instances: 569
+## 🙏 Acknowledgments
 
-Train/Validation/Test Split: 70% / 20% / 10%
+- [Ultralytics YOLOv8](https://github.com/ultralytics/ultralytics)
+- [Streamlit](https://streamlit.io/)
+- [OpenCV](https://opencv.org/)
 
-Image Resolution: 640 × 640 px
+---
 
-Preprocessing: Grayscale conversion (CRT phosphor filter), stretch mode resizing
-
-⚙️ Model Configuration
-
-Architecture: YOLOv8n (Ultralytics v8.3.191)
-
-Backbone: Pretrained COCO weights (transfer learning)
-
-Optimizer: AdamW
-
-Learning Rate: 0.01
-
-Epochs: 100 (early stopping enabled)
-
-Confidence Threshold: 0.25 (default)
-
-NMS IoU Threshold: 0.7 (default)
-
-📊 Evaluation Metrics
-Metric	Description
-Precision (P)	Proportion of predicted positives that are correct
-Recall (R)	Proportion of actual positives correctly detected
-mAP@50 / mAP@50–95	Mean average precision at IoU thresholds
-AP@75	Average precision at IoU 0.75 (stricter localization)
-ECE (Expected Calibration Error)	Measures how well confidence scores match true accuracy
-🔗 Reproducibility Notes
-
-Weights: best.pt (6 MB) — available in repository
-
-Configuration: data.yaml and model.yaml provided
-
-Environment:
-
-Python 3.12
-
-Ultralytics 8.3.191
-
-PyTorch 2.8.0 + CUDA 12.6
-
-GPU Used: NVIDIA Tesla T4 (Google Colab)
-
-🧠 Citation
+## 📖 Citation
 
 If you use this dataset or model, please cite:
 
-Hanterdsith, B. Integrating Forensic Wound Detection and Classification with Custom Vision in Simulation-Based Teaching: An Educational Innovation for Medical Students. (2025)
+```
+Hanterdsith, B. (2025). Integrating Forensic Wound Detection and Classification 
+with Custom Vision in Simulation-Based Teaching: An Educational Innovation for 
+Medical Students.
+```
