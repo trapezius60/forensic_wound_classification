@@ -48,9 +48,11 @@ Open your browser at `http://localhost:8501`
 forensic_wound_classification/
 ├── app.py                 # Main Streamlit application
 ├── models/
-│   └── best.pt           # YOLOv8 trained weights (6 MB)
+│   └── best.pt            # YOLOv8 trained weights (6 MB)
 ├── requirements.txt       # Python dependencies
-└── README.md             # Documentation
+└── LICENSE                # MIT: Free to use, modify, and redistribute with attribution
+└── README.md              # Documentation
+
 ```
 
 ---
@@ -119,15 +121,21 @@ Pull requests are welcome! For major changes, please open an issue first.
 This project — “Forensic Wound Detection and Classification with YOLOv8n:
 An Educational Innovation for Medical Students” — is released under a dual license model to ensure open research access while maintaining responsible use.
 
-Component	License	Description
-Source Code (Streamlit App, Python)	MIT License
-	Free to use, modify, and redistribute with attribution.
-Dataset (Simulation Wound Images)	CC BY-NC 4.0
-	Educational and research use only; commercial use prohibited.
+#Component	License	Description
+Source Code (Streamlit App, Python)	[MIT License](./LICENSE)
+Educational and research use only; commercial use prohibited.
 Trained Model (best.pt)	CC BY-NC 4.0
 	May be reused for academic research or teaching with attribution.
 
 ---
+
+## ⚖️ Ethical & Responsible Use Disclaimer
+
+This software and dataset are intended solely for educational and research use in the context of medical and forensic science training.
+They are not validated for clinical diagnosis, forensic adjudication, or legal proceedings.
+
+All inferences produced by the model must be interpreted under human expert supervision.
+The authors assume no liability for any misuse of this project beyond its intended educational scope.
 
 ## 🙏 Acknowledgments
 
