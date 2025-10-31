@@ -116,7 +116,16 @@ Pull requests are welcome! For major changes, please open an issue first.
 
 ## 📜 License
 
-MIT License – see [LICENSE](LICENSE) file for details.
+This project — “Forensic Wound Detection and Classification with YOLOv8n:
+An Educational Innovation for Medical Students” — is released under a dual license model to ensure open research access while maintaining responsible use.
+
+Component	License	Description
+Source Code (Streamlit App, Python)	MIT License
+	Free to use, modify, and redistribute with attribution.
+Dataset (Simulation Wound Images)	CC BY-NC 4.0
+	Educational and research use only; commercial use prohibited.
+Trained Model (best.pt)	CC BY-NC 4.0
+	May be reused for academic research or teaching with attribution.
 
 ---
 
