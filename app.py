@@ -35,8 +35,8 @@ wound_descriptions = {
 # ------------------- Load Model -------------------
 @st.cache_resource
 def load_model():
-    #return YOLO("models/best.pt") 
-    return YOLO("https://huggingface.co/trapezius60/forensic_wound_detection/resolve/main/best.pt")
+    return YOLO("models/best.pt") 
+    #return YOLO("https://huggingface.co/trapezius60/forensic_wound_detection/resolve/main/best.pt")
 
 model = load_model()
 
@@ -131,6 +131,7 @@ Forensic education Version: 1.1.0 | © 2025 BH <br>
   <a href="https://forms.gle/WgGnkcUQPafyhmng8" target="_blank">👍 Feedback Please</a>
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
