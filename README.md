@@ -1,14 +1,12 @@
 # 🤕 Forensic Wound Classification
 
-A **real-time wound detection web app** for medical education built with [Streamlit](https://streamlit.io/) and [YOLOv8](https://github.com/ultralytics/ultralytics). Designed for learning simulated scene investigation during forensic pathology training.
+A **real-time wound detection web app** for medical education built with [Hugging Face](https://huggingface.co/) and [YOLOv8](https://github.com/ultralytics/ultralytics). Designed for learning simulated scene investigation during forensic pathology training.
 
 ---
 
 ## 🚀 Features
 
 - 📷 **Upload Image** – Detect wounds in uploaded images
-- 🎥 **Live Camera** – Real-time wound detection via webcam
-- 📸 **Snapshot Capture** – Capture and analyze images from live feed
 - 💾 **Download Results** – Save processed images with bounding boxes
 - 📊 **Post-Evaluation** – Evaluate detection results after processing
 
@@ -35,7 +33,7 @@ pip install -r requirements.txt
 ## ▶️ Usage
 
 ```bash
-streamlit run app.py
+huggingface run app.py
 ```
 
 Open your browser at `http://localhost:8501`
@@ -60,12 +58,11 @@ forensic_wound_classification/
 ## 📦 Requirements
 
 ```txt
-streamlit>=1.30.0
-ultralytics==8.3.0
-opencv-python-headless==4.8.1.78
-streamlit-webrtc==0.63.0
-numpy>=1.26.0
-Pillow>=10.0.0
+ultralytics==8.3.191
+opencv-python-headless
+gradio
+Pillow
+numpy
 ```
 
 ---
@@ -140,7 +137,7 @@ The authors assume no liability for any misuse of this project beyond its intend
 ## 🙏 Acknowledgments
 
 - [Ultralytics YOLOv8](https://github.com/ultralytics/ultralytics)
-- [Streamlit](https://streamlit.io/)
+- [Hugging Face](https://huggingface.co/)
 - [OpenCV](https://opencv.org/)
 
 ---
